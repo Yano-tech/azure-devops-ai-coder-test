@@ -36,8 +36,7 @@ class AzureDevOpsClient:
     ) -> Dict[str, Any]:
         _, project, repo = self.parse_repo_url(repo_url)
 
-    pr_data = {
-            "sourceRefName": f"refs/heads/{source_branch}",
+    pr_data = {"sourceRefName": f"refs/heads/{source_branch}",
             "targetRefName": f"refs/heads/{target_branch}",
             "title": title,
             "description": description,
