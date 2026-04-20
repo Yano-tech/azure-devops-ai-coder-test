@@ -95,10 +95,28 @@ async def receive_webhook(request: Request):
         f"revision_fields={list(revision_fields.keys())[:10]}..."
     )
 
-        tags = merged_fields.get("System.Tags", "")
-    if "ai_item" not in tags:
-        logger.info(f"Skipped: No ai_item tag on work item {resource.get('id')}")
-        return {"status": "skipped", "message": "No ai_item tag"}
+      tags = merged_fields.get("System.Tags", "")
+    assigned_to = merged_fields.get("System.AssignedTo", "")
+
+    # Handle AssignedTo as dict or string
+    if isinstance(assigned_to, dict):
+        assigned_to = assigned_to.get("displayName", "")
+
+    # Route if: has 'agentic' tag OR assigned to "AI" persona
+    has_agentic_tag = "agentic" in tags
+    is_assigned_to_ai = assigned_to and "ai" in assigned_to.lower()
+
+    if not (has_agentic_tag or is_assigned_to_ai):
+        logger.info(
+            f"Skipped work item {resource.get('id')}: "
+            f"No 'agentic' tag (tags='{tags}') and not assigned to AI persona (assigned_to='{assigned_to}')"
+        )
+        return {"status": "skipped", "message": "Not an agentic work item"}
+
+    logger.info(
+        f"✓ Processing agentic work item {resource.get('id')} "
+        f"(tag={has_agentic_tag}, AI-assigned={is_assigned_to_ai})"
+    )
 
     work_item_id = str(resource.get("id"))
     title = merged_fields.get("System.Title", "")
@@ -107,7 +125,6 @@ async def receive_webhook(request: Request):
     if _is_duplicate(work_item_id, title, description):
         logger.info(f"Skipped duplicate webhook for work item {work_item_id}")
         return {"status": "skipped", "message": "Duplicate webhook, task already enqueued"}
-        
     project_ref = payload.get("projectReference", {})
     project_name = project_ref.get("name", "")
 
