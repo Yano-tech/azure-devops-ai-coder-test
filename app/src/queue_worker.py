@@ -119,7 +119,42 @@ async def process_task(task: dict) -> bool:
                 _run_git, ["checkout", branch_name], cwd=repo_path
             )
 
-        prompt = f"""
+                # Generate context-aware prompt
+        if is_nuxt_project:
+            prompt = f"""
+You are an expert Vue.js and Nuxt.js developer. Implement the following feature in this Nuxt webshop.
+
+## Work Item
+Title: {title}
+Description: {description}
+
+## Nuxt.js Context
+This is a Nuxt.js project. Please follow these conventions:
+1. Use the /pages directory for route pages
+2. Use the /components directory for reusable components
+3. Use the /composables directory for shared logic (Composition API)
+4. Respect auto-imports and module auto-discovery
+5. Follow Vue 3 Composition API patterns
+6. Use TypeScript if the project uses TypeScript
+7. Follow the existing code style in this project
+8. For UI components, use the existing component library if present (e.g., shadcn/vue, Tailwind)
+9. For state management, use Pinia if the project uses it
+10. For API calls, use $fetch or the composable patterns in the project
+
+## Instructions
+1. Analyze the codebase structure, especially:
+   - nuxt.config.ts/js configuration
+   - Existing /pages, /components, /composables structure
+   - Existing component library and styling approach
+   - Test patterns if present
+2. Implement the feature described above following Nuxt conventions
+3. Create/modify files in the appropriate directories
+4. Write unit tests (Vue Test Utils) or E2E tests (Playwright) if test patterns exist
+5. DO NOT commit changes - just create/modify source files
+6. DO NOT ask questions - implement to the best of your ability
+"""
+        else:
+            prompt = f"""
 You are an AI coding assistant. Implement the following feature in this repository.
 
 ## Work Item
@@ -129,11 +164,10 @@ Description: {description}
 ## Instructions
 1. Analyze the codebase to understand the existing structure and language
 2. Implement the feature described above by creating or modifying files as needed
-3. If the repository is empty or has no source code, create the necessary files from scratch using an appropriate language and framework
-4. Write appropriate tests if test patterns exist
-5. Follow existing code conventions and patterns
-6. DO NOT commit changes - just create/modify source files
-7. DO NOT ask questions - just implement the feature to the best of your ability
+3. Write appropriate tests if test patterns exist
+4. Follow existing code conventions and patterns
+5. DO NOT commit changes - just create/modify source files
+6. DO NOT ask questions - just implement the feature to the best of your ability
 """
 
         try:
