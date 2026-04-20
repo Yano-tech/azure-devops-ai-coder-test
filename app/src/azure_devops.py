@@ -24,23 +24,25 @@ class AzureDevOpsClient:
         repo = parts[1] if len(parts) > 1 else ""
         return self.org, project, repo
 
-    async def create_pull_request(
+       async def create_pull_request(
         self,
         repo_url: str,
         source_branch: str,
         target_branch: str,
         title: str,
         description: str,
-        work_item_id: Optional[str] = None
+        work_item_id: Optional[str] = None,
+        is_draft: bool = True
     ) -> Dict[str, Any]:
         _, project, repo = self.parse_repo_url(repo_url)
 
-        pr_data = {
+               pr_data = {
             "sourceRefName": f"refs/heads/{source_branch}",
             "targetRefName": f"refs/heads/{target_branch}",
             "title": title,
             "description": description,
             "reviewers": [],
+            "isDraft": is_draft,
         }
 
         if work_item_id:
@@ -52,7 +54,8 @@ class AzureDevOpsClient:
 
             if response.status_code in (200, 201):
                 pr = response.json()
-                logger.info(f"Created PR: {pr.get('pullRequestId')} - {pr.get('url')}")
+                draft_label = "[DRAFT]" if is_draft else ""
+                logger.info(f"Created PR {draft_label}: {pr.get('pullRequestId')} - {pr.get('url')}")
                 return pr
             else:
                 error = response.text
