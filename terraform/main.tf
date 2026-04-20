@@ -180,26 +180,14 @@ resource "azurerm_container_app" "main" {
         name  = "MAX_RETRIES"
         value = "3"
       }
-      
-      env {
-         name  = "PR_DRAFT_BY_DEFAULT"
-         value = var.pr_draft_by_default
-       }
 
-       env {
-         name  = "AUTO_CLOSE_WORK_ITEMS"
-         value = var.auto_close_work_items
+env {
+name  = "PR_DRAFT_BY_DEFAULT"
+value = var.pr_draft_by_default
        }
-
-       env {
-         name  = "ADD_PR_COMMENT"
-         value = var.add_pr_comment
-       }
-
-       env {
-         name  = "NUXT_PROJECTS"
-         value = var.nuxt_projects
-         }      
+env {
+name  = "AUTO_CLOSE_WORK_ITEMS"
+        }
       }
     }
   }
