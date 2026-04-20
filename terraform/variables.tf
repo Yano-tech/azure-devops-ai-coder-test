@@ -83,3 +83,26 @@ variable "log_analytics_workspace_name" {
   type        = string
   default     = "ai-coder-logs"
 }
+variable "pr_draft_by_default" {
+  description = "Create pull requests as draft by default for safer review"
+  type        = bool
+  default     = true
+}
+
+variable "auto_close_work_items" {
+  description = "Automatically close work items after PR creation (set to false for manual closure)"
+  type        = bool
+  default     = false
+}
+
+variable "add_pr_comment" {
+  description = "Add helpful comment to PRs explaining next steps"
+  type        = bool
+  default     = true
+}
+
+variable "nuxt_projects" {
+  description = "JSON array of project names using Nuxt.js for framework-specific prompts"
+  type        = string
+  default     = "[]"
+}
