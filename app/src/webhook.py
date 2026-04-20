@@ -95,7 +95,7 @@ async def receive_webhook(request: Request):
         f"revision_fields={list(revision_fields.keys())[:10]}..."
     )
 
-      tags = merged_fields.get("System.Tags", "")
+    tags = merged_fields.get("System.Tags", "")
     assigned_to = merged_fields.get("System.AssignedTo", "")
 
     # Handle AssignedTo as dict or string
@@ -125,7 +125,9 @@ async def receive_webhook(request: Request):
     if _is_duplicate(work_item_id, title, description):
         logger.info(f"Skipped duplicate webhook for work item {work_item_id}")
         return {"status": "skipped", "message": "Duplicate webhook, task already enqueued"}
+   
     project_ref = payload.get("projectReference", {})
+    
     project_name = project_ref.get("name", "")
 
     # Azure DevOps may also send project info under resourceContainers
