@@ -127,7 +127,6 @@ async def receive_webhook(request: Request):
         return {"status": "skipped", "message": "Duplicate webhook, task already enqueued"}
 
     project_ref = payload.get("projectReference", {})
-    
     project_name = project_ref.get("name", "")
 
     # Azure DevOps may also send project info under resourceContainers
