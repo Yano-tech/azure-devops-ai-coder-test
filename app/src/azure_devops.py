@@ -36,13 +36,14 @@ class AzureDevOpsClient:
     ) -> Dict[str, Any]:
         _, project, repo = self.parse_repo_url(repo_url)
 
-    pr_data = {"sourceRefName": f"refs/heads/{source_branch}",
-            "targetRefName": f"refs/heads/{target_branch}",
-            "title": title,
-            "description": description,
-            "reviewers": [],
-            "isDraft": is_draft,
-        }
+    pr_data = {
+        "sourceRefName": f"refs/heads/{source_branch}",
+        "targetRefName": f"refs/heads/{target_branch}",
+        "title": title,
+        "description": description,
+        "reviewers": [],
+        "isDraft": is_draft,
+}
 
         if work_item_id:
             pr_data["workItemRefs"] = [{"id": str(work_item_id)}]
