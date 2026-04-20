@@ -95,7 +95,7 @@ async def receive_webhook(request: Request):
         f"revision_fields={list(revision_fields.keys())[:10]}..."
     )
 
-    tags = merged_fields.get("System.Tags", "")
+        tags = merged_fields.get("System.Tags", "")
     if "ai_item" not in tags:
         logger.info(f"Skipped: No ai_item tag on work item {resource.get('id')}")
         return {"status": "skipped", "message": "No ai_item tag"}
@@ -107,7 +107,7 @@ async def receive_webhook(request: Request):
     if _is_duplicate(work_item_id, title, description):
         logger.info(f"Skipped duplicate webhook for work item {work_item_id}")
         return {"status": "skipped", "message": "Duplicate webhook, task already enqueued"}
-
+        
     project_ref = payload.get("projectReference", {})
     project_name = project_ref.get("name", "")
 
