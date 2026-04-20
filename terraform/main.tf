@@ -179,7 +179,9 @@ resource "azurerm_container_app" "main" {
       env {
         name  = "MAX_RETRIES"
         value = "3"
-       env {
+      }
+      
+      env {
          name  = "PR_DRAFT_BY_DEFAULT"
          value = var.pr_draft_by_default
        }
