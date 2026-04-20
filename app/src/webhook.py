@@ -125,7 +125,7 @@ async def receive_webhook(request: Request):
     if _is_duplicate(work_item_id, title, description):
         logger.info(f"Skipped duplicate webhook for work item {work_item_id}")
         return {"status": "skipped", "message": "Duplicate webhook, task already enqueued"}
-   
+
     project_ref = payload.get("projectReference", {})
     
     project_name = project_ref.get("name", "")
