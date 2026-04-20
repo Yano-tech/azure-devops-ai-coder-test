@@ -59,6 +59,9 @@ async def process_task(task: dict) -> bool:
     project_name = task["projectName"]
 
     logger.info(f"Processing task: {work_item_id} - {title}")
+        # Check if this is a Nuxt project
+    is_nuxt_project = project_name.lower() in settings.nuxt_project_list
+    logger.info(f"Framework: Nuxt={is_nuxt_project} (project='{project_name}')")
 
     with tempfile.TemporaryDirectory() as tmpdir:
         repo_path = os.path.join(tmpdir, "repo")
