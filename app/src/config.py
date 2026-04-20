@@ -1,6 +1,63 @@
 # Configuration settings
-nuxt_projects = "/path/to/nuxt_projects"
-pr_draft_by_default = true
-auto_close_work_items = true
-add_pr_comment = true
-nuxt_project_list = ["project1", "project2", "project3"]
+from pydantic_settings import BaseSettings
+from typing import Dict
+from functools import lru_cache
+from pathlib import Path
+import json
+
+# Resolve .env relative to this file's parent directory (app/)
+_ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+
+
+class Settings(BaseSettings):
+    # Existing settings
+    azure_openai_endpoint: str
+    azure_openai_key: str
+    azure_openai_deployment: str = "gpt-4o"
+    azure_devops_pat: str
+    azure_devops_org: str
+    storage_connection_string: str
+    project_repo_map: str = "{}"
+    webhook_secret: str = ""
+    queue_name: str = "ai-coder-tasks"
+    dead_letter_queue_name: str = "ai-coder-tasks-dlq"
+    max_retries: int = 3
+    
+    # NEW: Nuxt.js & Workflow Configuration
+    nuxt_projects: str = "[]"  # JSON array of project names using Nuxt
+    pr_draft_by_default: bool = True  # Create PRs as draft for safety
+    auto_close_work_items: bool = False  # Manual closure required
+    add_pr_comment: bool = True  # Add helpful comment explaining next steps
+
+    @property
+    def project_to_repo(self) -> Dict[str, str]:
+        """Parse PROJECT_REPO_MAP JSON into dict."""
+        try:
+            mapping = json.loads(self.project_repo_map)
+        except json.JSONDecodeError as e:
+            raise ValueError(
+                f"PROJECT_REPO_MAP contains invalid JSON: {e}"
+            ) from e
+        if not isinstance(mapping, dict):
+            raise ValueError("PROJECT_REPO_MAP must be a JSON object (dict)")
+        return mapping
+
+    @property
+    def nuxt_project_list(self) -> list[str]:
+        """List of projects using Nuxt.js for framework-specific prompts."""
+        try:
+            projects = json.loads(self.nuxt_projects)
+            if not isinstance(projects, list):
+                return []
+            return [str(p).lower() for p in projects]
+        except json.JSONDecodeError:
+            return []
+
+    class Config:
+        env_file = str(_ENV_FILE)
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Get settings (cached)."""
+    return Settings()
